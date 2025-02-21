@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package bookstore;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Service for detecting various types of fraud in orders
+service FraudDetectionService {
+    // Analyzes user behavior patterns to detect potential fraud
+    rpc DetectUserFraud (OrderInfo) returns (FraudDetectionResponse);
+    
+    // Analyzes credit card information for potential fraud
+    rpc DetectCreditCardFraud (OrderInfo) returns (FraudDetectionResponse);
+    
+    // Clears historical fraud detection data for a user
+   //rpc ClearData (ClearDataRequest) returns (ClearDataResponse);
+}
+
+// Contains all order-related information for fraud detection
+message OrderInfo {
+    string order_id = 1;
+    string user_id = 2;
+    // PaymentInfo payment_info = 3;
+    // OrderDetails order_details = 4;
+    // UserContext user_context = 5;
+}
+
+message FraudDetectionResponse {
+    bool is_fraudulent = 1;
+    double risk_score = 2;                   // Score between 0 and 1
+    // repeated RiskFactor risk_factors = 3;
+    string review_id = 4;                    // ID for tracking fraud review cases
+}
+

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package bookstore;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Service for detecting various types of fraud in orders
+service TransactionVerificationService {
+    // Analyzes user behavior patterns to detect potential fraud
+    rpc VerifyTransaction (OrderInfo) returns (TransactionVerificationResponse);
+    
+    
+    // Clears historical fraud detection data for a user
+   //rpc ClearData (ClearDataRequest) returns (ClearDataResponse);
+}
+
+// Contains all order-related information for fraud detection
+message OrderInfo {
+    string order_id = 1;
+    string user_id = 2;
+    // PaymentInfo payment_info = 3;
+    // OrderDetails order_details = 4;
+    // UserContext user_context = 5;
+}
+message TransactionVerificationResponse {
+    string verification_id = 1;                      // Unique identifier for this verification
+    bool is_verified = 2;                           // Overall verification status
+    VerificationStatus status = 3;                  // Detailed verification status
+    google.protobuf.Timestamp verified_at = 4;      // When the verification was performed
+    // repeated VerificationCheck checks = 5;          // List of verification checks performed
+    string rejection_reason = 5;                    // Reason if verification failed
+    double risk_score = 6;                          // Score between 0 and 1             // Additional verification metadata
+}
+
+enum VerificationStatus {
+    VERIFICATION_STATUS_UNSPECIFIED = 0;
+    VERIFICATION_STATUS_APPROVED = 1;
+    VERIFICATION_STATUS_REJECTED = 2;
+}

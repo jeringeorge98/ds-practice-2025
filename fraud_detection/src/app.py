@@ -40,6 +40,9 @@ def serve():
     print("Server started. Listening on port 50051.")
     # Keep thread alive
     server.wait_for_termination()
+    
+def detect_fraud(order):
+        
 
 if __name__ == '__main__':
     serve()
