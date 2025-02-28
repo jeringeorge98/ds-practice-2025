@@ -12,6 +12,10 @@ from concurrent import futures
 import requests
 from google import genai
 import json
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv("API_KEY")
+print(api_key,"api_key")
 API_KEY = "AIzaSyA7k3mveCWpA5MrnZ92G3lbGQ_RE6FBjhI"
 class BookSuggestionService(suggestions_grpc.SuggestionsServiceServicer):
     def SuggestBooks(self, request,context):

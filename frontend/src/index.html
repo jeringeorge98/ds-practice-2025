@@ -259,10 +259,9 @@ Please handle with care.</textarea
             const responseDiv = document.getElementById("response");
 
             if (response.ok) {
+              console.log(result.suggestedBooks, "suggestedBooks");
               const suggestedBooks = result.suggestedBooks
-                .map(
-                  (book) => `<li>${book.book_title} by ${book.book_author}</li>`
-                )
+                .map((book) => `<li>${book.title} by ${book.author}</li>`)
                 .join("");
               responseDiv.innerHTML = `
                         <strong>Order status: ${result.status}</strong><br>
