@@ -2,41 +2,23 @@ syntax = "proto3";
 
 package bookstore;
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 
-// Service for detecting various types of fraud in orders
+
 service SuggestionsService {
-    // Analyzes user behavior patterns to detect potential fraud
-    rpc getSuggestions(OrderedBooks) returns (SuggestionsResponse);
-    
-    // Analyzes credit card information for potential fraud
-    // rpc DetectCreditCardFraud (OrderInfo) returns (FraudDetectionResponse);
-    
-    // Clears historical fraud detection data for a user
-   //rpc ClearData (ClearDataRequest) returns (ClearDataResponse);
+    // recommend similar books based on the book name
+    rpc SuggestBooks(BookRequest) returns (SuggestionsResponse);    
 }
 
-message OrderedBooks {
-    string user_id = 1;
-    repeated string book_ids = 2;
-    optional int32 max_suggestions = 3;      // Maximum number of suggestions to return
+message BookRequest {
+    string book_name = 1;
 }
 
-// Response containing suggested books
 message SuggestionsResponse {
-    repeated BookSuggestion suggestions = 1;
-    string suggestion_id = 2;                // Unique identifier for this suggestion set
-    google.protobuf.Timestamp created_at = 3;
+ repeated Suggestions suggestions = 1;
 }
-message BookSuggestion {
-    string book_id = 1;
-    string title = 2;
-    string author = 3;
-    double price = 5;
-    string currency = 6;
-    // repeated string genres = 7;
-    // float similarity_score = 8;              // How similar this book is to the user's preferences
-    repeated string matching_categories = 9;  // Categories that match user's interest
-    string description = 11;
+
+message Suggestions {
+    string book_title = 1;
+    string book_author = 2;
 }
+

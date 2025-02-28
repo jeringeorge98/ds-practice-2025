@@ -1,0 +1,18 @@
+
+### CHECKOUT SERVICE
+GET http://localhost:8081/Checkout
+Content-Type: application/json
+
+{
+    "order_id": "1234567890",
+    "user_id": "user123"
+}   
+
+### Fraud Detection Service
+GET http://localhost:50051/DetectUserFraud
+Content-Type: application/json
+
+{
+    "order_id": "1234567890",
+    "user_id": "user123"
+}   

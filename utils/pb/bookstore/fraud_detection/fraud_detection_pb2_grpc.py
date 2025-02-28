@@ -37,12 +37,7 @@ class FraudDetectionServiceStub(object):
         """
         self.DetectUserFraud = channel.unary_unary(
                 '/bookstore.FraudDetectionService/DetectUserFraud',
-                request_serializer=fraud__detection__pb2.OrderInfo.SerializeToString,
-                response_deserializer=fraud__detection__pb2.FraudDetectionResponse.FromString,
-                _registered_method=True)
-        self.DetectCreditCardFraud = channel.unary_unary(
-                '/bookstore.FraudDetectionService/DetectCreditCardFraud',
-                request_serializer=fraud__detection__pb2.OrderInfo.SerializeToString,
+                request_serializer=fraud__detection__pb2.UserRequest.SerializeToString,
                 response_deserializer=fraud__detection__pb2.FraudDetectionResponse.FromString,
                 _registered_method=True)
 
@@ -58,24 +53,12 @@ class FraudDetectionServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def DetectCreditCardFraud(self, request, context):
-        """Analyzes credit card information for potential fraud
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_FraudDetectionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'DetectUserFraud': grpc.unary_unary_rpc_method_handler(
                     servicer.DetectUserFraud,
-                    request_deserializer=fraud__detection__pb2.OrderInfo.FromString,
-                    response_serializer=fraud__detection__pb2.FraudDetectionResponse.SerializeToString,
-            ),
-            'DetectCreditCardFraud': grpc.unary_unary_rpc_method_handler(
-                    servicer.DetectCreditCardFraud,
-                    request_deserializer=fraud__detection__pb2.OrderInfo.FromString,
+                    request_deserializer=fraud__detection__pb2.UserRequest.FromString,
                     response_serializer=fraud__detection__pb2.FraudDetectionResponse.SerializeToString,
             ),
     }
@@ -105,34 +88,7 @@ class FraudDetectionService(object):
             request,
             target,
             '/bookstore.FraudDetectionService/DetectUserFraud',
-            fraud__detection__pb2.OrderInfo.SerializeToString,
-            fraud__detection__pb2.FraudDetectionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def DetectCreditCardFraud(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/bookstore.FraudDetectionService/DetectCreditCardFraud',
-            fraud__detection__pb2.OrderInfo.SerializeToString,
+            fraud__detection__pb2.UserRequest.SerializeToString,
             fraud__detection__pb2.FraudDetectionResponse.FromString,
             options,
             channel_credentials,

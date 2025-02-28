@@ -26,8 +26,7 @@ if _version_not_supported:
 
 
 class SuggestionsServiceStub(object):
-    """Service for detecting various types of fraud in orders
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -35,19 +34,18 @@ class SuggestionsServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.getSuggestions = channel.unary_unary(
-                '/bookstore.SuggestionsService/getSuggestions',
-                request_serializer=suggestions__pb2.OrderedBooks.SerializeToString,
+        self.SuggestBooks = channel.unary_unary(
+                '/bookstore.SuggestionsService/SuggestBooks',
+                request_serializer=suggestions__pb2.BookRequest.SerializeToString,
                 response_deserializer=suggestions__pb2.SuggestionsResponse.FromString,
                 _registered_method=True)
 
 
 class SuggestionsServiceServicer(object):
-    """Service for detecting various types of fraud in orders
-    """
+    """Missing associated documentation comment in .proto file."""
 
-    def getSuggestions(self, request, context):
-        """Analyzes user behavior patterns to detect potential fraud
+    def SuggestBooks(self, request, context):
+        """recommend similar books based on the book name
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -56,9 +54,9 @@ class SuggestionsServiceServicer(object):
 
 def add_SuggestionsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'getSuggestions': grpc.unary_unary_rpc_method_handler(
-                    servicer.getSuggestions,
-                    request_deserializer=suggestions__pb2.OrderedBooks.FromString,
+            'SuggestBooks': grpc.unary_unary_rpc_method_handler(
+                    servicer.SuggestBooks,
+                    request_deserializer=suggestions__pb2.BookRequest.FromString,
                     response_serializer=suggestions__pb2.SuggestionsResponse.SerializeToString,
             ),
     }
@@ -70,11 +68,10 @@ def add_SuggestionsServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class SuggestionsService(object):
-    """Service for detecting various types of fraud in orders
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def getSuggestions(request,
+    def SuggestBooks(request,
             target,
             options=(),
             channel_credentials=None,
@@ -87,8 +84,8 @@ class SuggestionsService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/bookstore.SuggestionsService/getSuggestions',
-            suggestions__pb2.OrderedBooks.SerializeToString,
+            '/bookstore.SuggestionsService/SuggestBooks',
+            suggestions__pb2.BookRequest.SerializeToString,
             suggestions__pb2.SuggestionsResponse.FromString,
             options,
             channel_credentials,
