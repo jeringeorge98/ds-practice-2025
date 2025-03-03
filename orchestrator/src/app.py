@@ -105,7 +105,7 @@ def parse_suggested_books(suggested_books_json):
                 "title": book_detail.book_title,
                 "author": book_detail.book_author
             })
-    print(suggested_books_list, "suggested_books_list in right format")
+    # print(suggested_books_list, "suggested_books_list in right format")
     return suggested_books_list
 
 @app.route("/checkout", methods=["POST"])
@@ -118,21 +118,21 @@ def checkout():
     request_data = json.loads(request.data)
     order_status_response ={}
     # Print request object data
-    print("Request Data:", request_data.get("items"))
+    print("Request Data:", request_data)
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
      #verification_future =  executor.submit(connect_to_transaction_verification_service,request_data)
      #fraud_future =  executor.submit(connect_to_fraud_detection_service,request_data)
-     suggestions_future= executor.submit(suggestBooks,request_data)
+    #  suggestions_future= executor.submit(suggestBooks,request_data)
      
      #verification_response = verification_future.result()
      #fraud_response = fraud_future.result()
-     suggestions_response = suggestions_future.result()
+    #  suggestions_response = suggestions_future.result()
      
      #print("Verification Response:", verification_response,time.time())
      #print("Fraud Response:", fraud_response,time.time())
-     print("Suggestions Response:", suggestions_response['suggestedBooks'],time.time())
-     suggested_books_json = suggestions_response['suggestedBooks'] 
+    #  print("Suggestions Response:", suggestions_response['suggestedBooks'],time.time())
+    #  suggested_books_json = suggestions_response['suggestedBooks'] 
              
      # call 
     # Dummy response following the provided YAML specification for the bookstore
@@ -142,7 +142,7 @@ def checkout():
      order_status_response = {
         "orderId": order_id,
         "status": "Order Approved",
-        "suggestedBooks": parse_suggested_books(suggested_books_json)
+        # "suggestedBooks": parse_suggested_books(suggested_books_json)
      }
     #   "suggestedBooks": [
     #         {"bookId": "123", "title": "The Best Book", "author": "Author 1"},
