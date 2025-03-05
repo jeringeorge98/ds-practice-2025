@@ -37,7 +37,7 @@ class FraudDetectionServiceStub(object):
         """
         self.DetectUserFraud = channel.unary_unary(
                 '/bookstore.FraudDetectionService/DetectUserFraud',
-                request_serializer=fraud__detection__pb2.UserRequest.SerializeToString,
+                request_serializer=fraud__detection__pb2.OrderInfo.SerializeToString,
                 response_deserializer=fraud__detection__pb2.FraudDetectionResponse.FromString,
                 _registered_method=True)
 
@@ -58,7 +58,7 @@ def add_FraudDetectionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'DetectUserFraud': grpc.unary_unary_rpc_method_handler(
                     servicer.DetectUserFraud,
-                    request_deserializer=fraud__detection__pb2.UserRequest.FromString,
+                    request_deserializer=fraud__detection__pb2.OrderInfo.FromString,
                     response_serializer=fraud__detection__pb2.FraudDetectionResponse.SerializeToString,
             ),
     }
@@ -88,7 +88,7 @@ class FraudDetectionService(object):
             request,
             target,
             '/bookstore.FraudDetectionService/DetectUserFraud',
-            fraud__detection__pb2.UserRequest.SerializeToString,
+            fraud__detection__pb2.OrderInfo.SerializeToString,
             fraud__detection__pb2.FraudDetectionResponse.FromString,
             options,
             channel_credentials,
