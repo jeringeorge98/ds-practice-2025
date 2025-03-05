@@ -21,6 +21,7 @@ class BookSuggestionService(suggestions_grpc.SuggestionsServiceServicer):
     def SuggestBooks(self, request,context):
         # Construct the response, including the same vector clock received in the request
         #have an deepseek api response maybe ?
+        print("Request:", request.book_name)
         prompt = f"""
 List a few popular books similar to {request.book_name} in JSON format.
 

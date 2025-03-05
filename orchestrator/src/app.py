@@ -174,9 +174,10 @@ def checkout():
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             fraud_future = executor.submit(detectUserFraud, request_data)
             fraud_response = fraud_future.result()
-            print("Fraud Response:", fraud_response.isFraudulent, fraud_response.reason, time.time())
+            print("Fraud Response:", fraud_response.isFraudulent, fraud_response.reason)
             
             if fraud_response.isFraudulent:
+                print("Order Rejected and reason:",fraud_response.reason)
                 return jsonify(
                     {
                         "orderId": order_id,
@@ -184,21 +185,30 @@ def checkout():
                         "suggestedBooks": []
                     }
                 )
-            
+            else :
+                suggestions_future = executor.submit(suggestBooks, request_data)
+                suggestions_response = suggestions_future.result()
+                suggested_books_json = suggestions_response['suggestedBooks'] 
+                return jsonify(
+                    {
+                        "orderId": order_id,
+                        "status": "Order Approved",
+                        "suggestedBooks": parse_suggested_books(suggested_books_json)
+                    }
+                )
             # order_status_response = {
             #     "orderId": order_id,
             #     "status": "Order Approved"
             # }
-            order_status_response = {
-                "orderId": order_id,
-                "status": "Order Approved",
-                "suggestedBooks": [
-                    {"bookId": "123", "title": "The Best Book", "author": "Author 1"},
-                    {"bookId": "456", "title": "The Second Best Book", "author": "Author 2"},
-                ],
-            }
+            # order_status_response = {
+            #     "orderId": order_id,
+            #     "status": "Order Approved",
+            #     "suggestedBooks": [
+            #         {"bookId": "123", "title": "The Best Book", "author": "Author 1"},
+            #         {"bookId": "456", "title": "The Second Best Book", "author": "Author 2"},
+            #     ],
+            # }
             
-        return order_status_response
     except Exception as e:
         print(f"Error in checkout: {str(e)}")
         import traceback
