@@ -37,7 +37,7 @@ class TransactionVerificationServiceStub(object):
         """
         self.VerifyTransaction = channel.unary_unary(
                 '/bookstore.TransactionVerificationService/VerifyTransaction',
-                request_serializer=transaction__verification__pb2.OrderInfo.SerializeToString,
+                request_serializer=transaction__verification__pb2.TransactionVerificationRequest.SerializeToString,
                 response_deserializer=transaction__verification__pb2.TransactionVerificationResponse.FromString,
                 _registered_method=True)
 
@@ -58,7 +58,7 @@ def add_TransactionVerificationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'VerifyTransaction': grpc.unary_unary_rpc_method_handler(
                     servicer.VerifyTransaction,
-                    request_deserializer=transaction__verification__pb2.OrderInfo.FromString,
+                    request_deserializer=transaction__verification__pb2.TransactionVerificationRequest.FromString,
                     response_serializer=transaction__verification__pb2.TransactionVerificationResponse.SerializeToString,
             ),
     }
@@ -88,7 +88,7 @@ class TransactionVerificationService(object):
             request,
             target,
             '/bookstore.TransactionVerificationService/VerifyTransaction',
-            transaction__verification__pb2.OrderInfo.SerializeToString,
+            transaction__verification__pb2.TransactionVerificationRequest.SerializeToString,
             transaction__verification__pb2.TransactionVerificationResponse.FromString,
             options,
             channel_credentials,

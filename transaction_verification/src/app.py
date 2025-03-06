@@ -3,6 +3,9 @@ import os
 import uuid
 import random
 import time
+import re
+import calendar
+from datetime import datetime
 # This set of lines are needed to import the gRPC stubs.
 # The path of the stubs is relative to the current file, or absolute inside the container.
 # Change these lines only if strictly needed.
@@ -23,8 +26,6 @@ def validate_required_fields(request):
         missing.append("user.name")
     if not request.user.contact:
         missing.append("user.contact")
-    if not request.user.cardHolderName:
-        missing.append("user.cardHolderName")
     # Credit card fields
     if not request.creditCard.number:
         missing.append("creditCard.number")
@@ -36,8 +37,8 @@ def validate_required_fields(request):
     if not request.billingAddress.street or not request.billingAddress.city or not request.billingAddress.country:
         missing.append("billingAddress (street/city/country)")
     # Shipping Address
-    if not request.shippingAddress.street or not request.shippingAddress.city or not request.shippingAddress.country:
-        missing.append("shippingAddress (street/city/country)")
+    # if not request.shippingAddress.street or not request.shippingAddress.city or not request.shippingAddress.country:
+    #     missing.append("shippingAddress (street/city/country)")
     # Items list
     if len(request.items) == 0:
         missing.append("items (list is empty)")
@@ -70,48 +71,52 @@ def validate_cvv(cvv):
 
 
 
-class TransactionVerificationService(transaction_verification.TransactionVerificationService):
+class TransactionVerificationService(transaction_verification_grpc.TransactionVerificationServiceServicer):
     def VerifyTransaction(self, request, context):
         """
         Implementation of VerifyTransaction.
         Applies basic validation logic on the incoming transaction request.
         """
-        print(f"Received transaction verification request for order ID: {request.order_id}, user ID: {request.user.user_id}")
+        print(f"Received transaction verification request : {request}")
         
+        if not request.items:
+            response.verification = False
+            response.errors = "Items list is empty"
+            return response
         # 1. Validate required fields
         missing = validate_required_fields(request)
         if missing:
             response = transaction_verification.TransactionVerificationResponse()
-            response.is_valid = False
-            response.message = "Missing required fields: " + ", ".join(missing)
+            response.verification = False
+            response.errors = "Missing required fields: " + ", ".join(missing)
             return response
         
         # 2. Validate credit card number format
         if not validate_credit_card_number(request.creditCard.number):
             response = transaction_verification.TransactionVerificationResponse()
-            response.is_valid = False
-            response.message = "Invalid credit card number. It must be exactly 16 digits."
+            response.verification = False
+            response.errors = "Invalid credit card number. It must be exactly 16 digits."
             return response
 
         # 3. Validate expiration date format and check if card is expired
         if not validate_expiration_date(request.creditCard.expirationDate):
             response = transaction_verification.TransactionVerificationResponse()
-            response.is_valid = False
-            response.message = "Invalid or expired credit card expiration date."
+            response.verification = False
+            response.errors = "Invalid or expired credit card expiration date."
             return response
         
         # 4. Validate CVV
         if not validate_cvv(request.creditCard.cvv):
             response = transaction_verification.TransactionVerificationResponse()
-            response.is_valid = False
-            response.message = "Invalid CVV. It must be 3 or 4 digits."
+            response.verification = False
+            response.errors = "Invalid CVV. It must be 3 or 4 digits."
             return response
         
         # 5. Additional simple validations can be added here (e.g., checking email format)
         # For demonstration, if all validations pass, we consider the transaction valid.
         response = transaction_verification.TransactionVerificationResponse()
-        response.is_valid = True
-        response.message = "Transaction verified successfully."
+        response.verification = True
+        response.errors = "No  errors"
 
         return response
     
@@ -125,7 +130,7 @@ def serve():
     server.add_insecure_port("[::]:" + port)
     # Start the server
     server.start()
-    print("Transaction Server started. Listening on port 50051.")
+    print("Transaction Server started. Listening on 50052.")
     # Keep thread alive
     server.wait_for_termination()
 

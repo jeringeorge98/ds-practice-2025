@@ -46,7 +46,7 @@ def getReason(prediction,credit_card_valid,name_match,total_num_items,billing_sh
 
 
 
-def process_request(data):
+def processRequest(data):
     # 1. Extract base fields
   try:
      print("Data to process:", data)
@@ -84,7 +84,7 @@ def process_request(data):
      )
     
     # Check credit card validity (assuming you have a helper function)
-     credit_card_valid = 1 if is_credit_card_valid(expiration_date) else 0
+     credit_card_valid = 1 if isCreditCardValid(expiration_date) else 0
     
     # Compare username and card holder name
      name_match = 1 if (username == card_holder_name) else 0
@@ -118,7 +118,7 @@ def process_request(data):
   return X_input, feature_cols,credit_card_valid,name_match,total_num_items,billing_shipping_match
 
 
-def is_credit_card_valid(expiration_date_str):
+def isCreditCardValid(expiration_date_str):
      try:
         exp_month, exp_year = expiration_date_str.split("/")
         exp_month = int(exp_month)
@@ -134,13 +134,9 @@ def is_credit_card_valid(expiration_date_str):
 class FraudDetectionService(fraud_detection_grpc.FraudDetectionServiceServicer):
     # Create an RPC function to say hello
     def DetectUserFraud(self, request, context):
-        # Create a HelloResponse object
-        # print("Received fraud detection request:", request)
         
-        # Set the greeting field of the response object
-        # Print the response for debugging
         print("Request:",request)
-        X_input, feature_cols,credit_card_valid,name_match,total_num_items,billing_shipping_match = process_request(request)
+        X_input, feature_cols,credit_card_valid,name_match,total_num_items,billing_shipping_match = processRequest(request)
         print("New Data:", X_input, feature_cols)  
      # Use os.path.join for better path handling
         model_path = os.path.join("/app/fraud_detection.pkl")
@@ -155,8 +151,6 @@ class FraudDetectionService(fraud_detection_grpc.FraudDetectionServiceServicer):
     #  probabilities = model.predict_proba(X_input_matrix)[0]
         print("Prediction:", prediction)
         # print("Reasons:", reasons)
-        print("Imported fraud_detection:", fraud_detection)
-        print("Imported fraud_detection_grpc:", fraud_detection_grpc)
         value = True if prediction >= 0.5 else False
         print("Value:", value)
         response = fraud_detection.FraudDetectionResponse(
@@ -165,11 +159,7 @@ class FraudDetectionService(fraud_detection_grpc.FraudDetectionServiceServicer):
         )
         print("Response isFraudulent:", response.isFraudulent)
         print("Response reason:", response.reason)
-        # Return the response object
-        # response.isFraudulent = bool(prob)
-        # response.reason = ""
-        # response.reason = "" if len(reasons) == 0 else str(reasons[0])
-        # print("Response:", response)
+      
         return response
     
     

@@ -22,23 +22,27 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\tbookstore\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\".\n\tOrderInfo\x12\x10\n\x08order_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"\xdd\x01\n\x1fTransactionVerificationResponse\x12\x17\n\x0fverification_id\x18\x01 \x01(\t\x12\x13\n\x0bis_verified\x18\x02 \x01(\x08\x12-\n\x06status\x18\x03 \x01(\x0e\x32\x1d.bookstore.VerificationStatus\x12/\n\x0bverified_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x18\n\x10rejection_reason\x18\x05 \x01(\t\x12\x12\n\nrisk_score\x18\x06 \x01(\x01*}\n\x12VerificationStatus\x12#\n\x1fVERIFICATION_STATUS_UNSPECIFIED\x10\x00\x12 \n\x1cVERIFICATION_STATUS_APPROVED\x10\x01\x12 \n\x1cVERIFICATION_STATUS_REJECTED\x10\x02\x32w\n\x1eTransactionVerificationService\x12U\n\x11VerifyTransaction\x12\x14.bookstore.OrderInfo\x1a*.bookstore.TransactionVerificationResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\tbookstore\"0\n\x0fTransactionUser\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontact\x18\x02 \x01(\t\"L\n\x15TransactionCreditCard\x12\x0e\n\x06number\x18\x01 \x01(\t\x12\x16\n\x0e\x65xpirationDate\x18\x02 \x01(\t\x12\x0b\n\x03\x63vv\x18\x03 \x01(\t\"1\n\x0fTransactionItem\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x05\"f\n\x19TransactionBillingAddress\x12\x0e\n\x06street\x18\x01 \x01(\t\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\r\n\x05state\x18\x03 \x01(\t\x12\x0b\n\x03zip\x18\x04 \x01(\t\x12\x0f\n\x07\x63ountry\x18\x05 \x01(\t\"\x8d\x02\n\x1eTransactionVerificationRequest\x12(\n\x04user\x18\x01 \x01(\x0b\x32\x1a.bookstore.TransactionUser\x12\x34\n\ncreditCard\x18\x02 \x01(\x0b\x32 .bookstore.TransactionCreditCard\x12)\n\x05items\x18\x03 \x03(\x0b\x32\x1a.bookstore.TransactionItem\x12<\n\x0e\x62illingAddress\x18\x04 \x01(\x0b\x32$.bookstore.TransactionBillingAddress\x12\"\n\x1atermsAndConditionsAccepted\x18\x05 \x01(\x08\"G\n\x1fTransactionVerificationResponse\x12\x14\n\x0cverification\x18\x01 \x01(\x08\x12\x0e\n\x06\x65rrors\x18\x02 \x01(\t2\x8c\x01\n\x1eTransactionVerificationService\x12j\n\x11VerifyTransaction\x12).bookstore.TransactionVerificationRequest\x1a*.bookstore.TransactionVerificationResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transaction_verification_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_VERIFICATIONSTATUS']._serialized_start=379
-  _globals['_VERIFICATIONSTATUS']._serialized_end=504
-  _globals['_ORDERINFO']._serialized_start=107
-  _globals['_ORDERINFO']._serialized_end=153
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=156
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=377
-  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_start=506
-  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_end=625
+  _globals['_TRANSACTIONUSER']._serialized_start=45
+  _globals['_TRANSACTIONUSER']._serialized_end=93
+  _globals['_TRANSACTIONCREDITCARD']._serialized_start=95
+  _globals['_TRANSACTIONCREDITCARD']._serialized_end=171
+  _globals['_TRANSACTIONITEM']._serialized_start=173
+  _globals['_TRANSACTIONITEM']._serialized_end=222
+  _globals['_TRANSACTIONBILLINGADDRESS']._serialized_start=224
+  _globals['_TRANSACTIONBILLINGADDRESS']._serialized_end=326
+  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_start=329
+  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_end=598
+  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=600
+  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=671
+  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_start=674
+  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_end=814
 # @@protoc_insertion_point(module_scope)

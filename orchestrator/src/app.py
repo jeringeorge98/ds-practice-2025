@@ -14,11 +14,11 @@ suggestions_path = os.path.abspath(os.path.join(FILE, "../../../utils/pb/booksto
 transaction_verficiation_path = os.path.abspath(os.path.join(FILE, "../../../utils/pb/bookstore/transaction_verification"))
 sys.path.insert(0, fraud_detection_grpc_path)
 sys.path.insert(1, suggestions_path)
+sys.path.insert(2, transaction_verficiation_path)
 import fraud_detection_pb2_grpc as fraud_detection_grpc
 import fraud_detection_pb2 as fraud_detection
-# import fraud_detection_pb2_grpc as fraud_detection_grpc
-# import transaction_verification_pb2 as transaction_verification
-# import transaction_verification_pb2_grpc as transaction_verification_grpc
+import transaction_verification_pb2 as transaction_verification
+import transaction_verification_pb2_grpc as transaction_verification_grpc
 import suggestions_pb2 as suggestions
 import suggestions_pb2_grpc as suggestions_grpc
 import grpc
@@ -26,14 +26,7 @@ import grpc
 from datetime import datetime
 
 
-# def greet(name="you"):
-#     # Establish a connection with the fraud-detection gRPC service.
-#     with grpc.insecure_channel("fraud_detection:50051") as channel:
-#         # Create a stub object.
-#         stub = fraud_detection_grpc.HelloServiceStub(channel)
-#         # Call the service through the stub object.
-#         response = stub.SayHello(fraud_detection.HelloRequest(name=name))
-#     return response.greeting
+
 
  
 # Import Flask.
@@ -49,30 +42,43 @@ app = Flask(__name__)
 # Enable CORS for the app.
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-
-def connect_to_transaction_verification_service(order_info):
-    # with grpc.insecure_channel('transaction_verification:50052') as channel:
-    #     stub = transaction_verification_grpc.TransactionVerificationServiceStub(channel)
-    #     response = stub.VerifyTransaction(order_info)
-    #     print("Transaction Verification Response:", response)
-        time.sleep(5)
-        return {"dummyresponse":"dummyresponse"}
-def connect_to_fraud_detection_service(order_info):
-    # with grpc.insecure_channel('fraud_detection:50051') as channel:
-    #     stub = fraud_detection_grpc.FraudDetectionServiceStub(channel)
-    #     user_fraud_response = stub.DetectUserFraud(order_info)
-    #     credit_card_fraud_response = stub.DetectCreditCardFraud(order_info)        
-    #     print("Fraud Detection Response:", user_fraud_response,credit_card_fraud_response)
-        time.sleep(8)
-        response={"user_fraud_response":"user_fraud_response","credit_card_fraud_response":"credit_card_fraud_response"}
+def verifyTransaction(verification_info):
+   try: 
+    print("Verification Info:", verification_info)
+    verification_request = transaction_verification.TransactionVerificationRequest(
+        user=transaction_verification.TransactionUser(
+            name=verification_info.get('user', {}).get('name', ''),
+            contact=verification_info.get('user', {}).get('contact', '')
+        ),
+        creditCard= transaction_verification.TransactionCreditCard(
+            number=verification_info.get('creditCard', {}).get('number', ''),
+            expirationDate=verification_info.get('creditCard', {}).get('expirationDate', ''),
+            cvv=verification_info.get('creditCard', {}).get('cvv', '')
+        ),
+        items=[
+                transaction_verification.TransactionItem(
+                    name=item.get('name', ''),
+                    quantity=item.get('quantity', 0)
+                ) for item in verification_info.get('items', [])
+            ],
+        billingAddress=transaction_verification.TransactionBillingAddress(
+            street=verification_info.get('billingAddress', {}).get('street', ''),
+            city=verification_info.get('billingAddress', {}).get('city', ''),
+            country=verification_info.get('billingAddress', {}).get('country', '')
+        ),
+        termsAndConditionsAccepted=verification_info.get('termsAccepted', False)
+    )
+    with grpc.insecure_channel("transaction_verification:50052") as channel:
+        stub = transaction_verification_grpc.TransactionVerificationServiceStub(channel)
+        response = stub.VerifyTransaction(verification_request)
+        print("Transaction Verification Response:", response)
         return response
+   except Exception as e:
+        print(f"Error in verifyTransaction: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise
 
-# def connect_to_suggestions_service(ordered_books):
-#     with grpc.insecure_channel('suggestions:50053') as channel:
-#         stub = suggestions_grpc.SuggestionsServiceStub(channel)
-#         response = stub.getSuggestions(ordered_books)
-#         print("Suggestions Response:", response)
-#         return response
 
 def detectUserFraud(order_info):
     print("Order Info received in detectUserFraud:", order_info)
@@ -146,9 +152,9 @@ def index():
     #response = greet(name="Jerin")
     # Return the response.
     return "Server UP"
-def parse_suggested_books(suggested_books_json):
+def parseSuggestedBooks(suggestedBooksJson):
     suggested_books_list = []
-    for book in suggested_books_json:
+    for book in suggestedBooksJson:
         # Assuming 'title' is a list of book details
         for book_detail in book['title']:
             book_id = str(uuid.uuid4())
@@ -172,12 +178,38 @@ def checkout():
         print("Received request data:", request_data)
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            fraud_future = executor.submit(detectUserFraud, request_data)
-            fraud_response = fraud_future.result()
-            print("Fraud Response:", fraud_response.isFraudulent, fraud_response.reason)
-            
-            if fraud_response.isFraudulent:
-                print("Order Rejected and reason:",fraud_response.reason)
+            transaction_future = executor.submit(verifyTransaction, request_data)
+            transaction_verification_response = transaction_future.result()
+            print("Transaction Response:", transaction_verification_response)
+            if transaction_verification_response.verification:
+                print("Transaction Verified")
+                fraud_future = executor.submit(detectUserFraud, request_data)
+                fraud_response = fraud_future.result()
+                print("Fraud Response:", fraud_response.isFraudulent, fraud_response.reason)
+                
+                if fraud_response.isFraudulent:
+                    print("Order Rejected and reason:",fraud_response.reason)
+                    return jsonify(
+                        {
+                            "orderId": order_id,
+                            "status": "Order Rejected",
+                            "suggestedBooks": []
+                        }
+                    )
+                else :
+                    print("Order Approved")
+                    suggestions_future = executor.submit(suggestBooks, request_data)
+                    suggestions_response = suggestions_future.result()
+                    suggested_books_json = suggestions_response['suggestedBooks'] 
+                    return jsonify(
+                        {
+                            "orderId": order_id,
+                            "status": "Order Approved",
+                            "suggestedBooks": parseSuggestedBooks(suggested_books_json)
+                        }
+                    )
+            else:
+                print("Transaction Verification Failed")
                 return jsonify(
                     {
                         "orderId": order_id,
@@ -185,29 +217,6 @@ def checkout():
                         "suggestedBooks": []
                     }
                 )
-            else :
-                suggestions_future = executor.submit(suggestBooks, request_data)
-                suggestions_response = suggestions_future.result()
-                suggested_books_json = suggestions_response['suggestedBooks'] 
-                return jsonify(
-                    {
-                        "orderId": order_id,
-                        "status": "Order Approved",
-                        "suggestedBooks": parse_suggested_books(suggested_books_json)
-                    }
-                )
-            # order_status_response = {
-            #     "orderId": order_id,
-            #     "status": "Order Approved"
-            # }
-            # order_status_response = {
-            #     "orderId": order_id,
-            #     "status": "Order Approved",
-            #     "suggestedBooks": [
-            #         {"bookId": "123", "title": "The Best Book", "author": "Author 1"},
-            #         {"bookId": "456", "title": "The Second Best Book", "author": "Author 2"},
-            #     ],
-            # }
             
     except Exception as e:
         print(f"Error in checkout: {str(e)}")
