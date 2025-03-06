@@ -46,7 +46,21 @@ def validate_required_fields(request):
 
 def validate_credit_card_number(number):
     """Validate that the credit card number is exactly 16 digits."""
-    return bool(re.fullmatch(r"\d{16}", number))
+    nDigits = len(number)
+    nSum =0 
+    isSecond = False
+    for i in range(nDigits-1,-1,-1):
+        d = ord(number[i]) - ord('0')
+        if (isSecond == True):
+            d= d*2
+        nSum +=d//10
+        nSum +=d%10
+        isSecond = not isSecond
+    if (nSum % 10 == 0):
+        return True
+    else:
+        return False
+            
 
 def validate_expiration_date(date_str):
     """Validate the expiration date is in MM/YY format and not expired (using end-of-month)."""
@@ -95,7 +109,7 @@ class TransactionVerificationService(transaction_verification_grpc.TransactionVe
         if not validate_credit_card_number(request.creditCard.number):
             response = transaction_verification.TransactionVerificationResponse()
             response.verification = False
-            response.errors = "Invalid credit card number. It must be exactly 16 digits."
+            response.errors = "Invalid credit card number."
             return response
 
         # 3. Validate expiration date format and check if card is expired
