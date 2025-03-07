@@ -80,8 +80,8 @@ def validate_expiration_date(date_str):
         return False
 
 def validate_cvv(cvv):
-    """Validate that CVV is 3 or 4 digits."""
-    return bool(re.fullmatch(r"\d{3,4}", cvv))
+    """Validate that CVV is 3  digits."""
+    return bool(re.fullmatch(r"\d{3}", cvv))
 
 
 
@@ -123,7 +123,7 @@ class TransactionVerificationService(transaction_verification_grpc.TransactionVe
         if not validate_cvv(request.creditCard.cvv):
             response = transaction_verification.TransactionVerificationResponse()
             response.verification = False
-            response.errors = "Invalid CVV. It must be 3 or 4 digits."
+            response.errors = "Invalid CVV. It must be 3 digits."
             return response
         
         # 5. Additional simple validations can be added here (e.g., checking email format)
