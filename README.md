@@ -88,6 +88,13 @@ And then run each service individually.
 
 ### 6. Aggregating Results & Final Response
 - The Orchestrator compiles the verification (Transaction Verification), fraud check (Fraud Detection), and recommendations (Suggestions).
+- If Transaction Succeeds 
+```json
+{
+  "orderId": "<uuid>"
+  "status": "Order Approved",
+  "suggestedBooks": ["Book 1", "Book 2", "Book 3"]
+}
 - If either Transaction Verification fails or Fraud Detection deems the order fraudulent, the Orchestrator returns:
 
 ```json
