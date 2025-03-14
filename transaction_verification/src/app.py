@@ -137,14 +137,14 @@ class TransactionVerificationService(transaction_verification_grpc.TransactionVe
 def serve():
     # Create a gRPC server
     server = grpc.server(futures.ThreadPoolExecutor())
-    # Add FraudDetectionService
+    # Add TransactionDetectionService
     transaction_verification_grpc.add_TransactionVerificationServiceServicer_to_server(TransactionVerificationService(), server)
-    # Listen on port 50051
+    # Listen on port 50052
     port = "50052"
     server.add_insecure_port("[::]:" + port)
     # Start the server
     server.start()
-    print("Transaction Server started. Listening on 50052.")
+    print("Transaction Verification Server started. Listening on 50052.")
     # Keep thread alive
     server.wait_for_termination()
 

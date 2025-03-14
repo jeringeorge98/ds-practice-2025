@@ -19,8 +19,7 @@ print(api_key,"api_key")
 API_KEY = "AIzaSyA7k3mveCWpA5MrnZ92G3lbGQ_RE6FBjhI"
 class BookSuggestionService(suggestions_grpc.SuggestionsServiceServicer):
     def SuggestBooks(self, request,context):
-        # Construct the response, including the same vector clock received in the request
-        #have an deepseek api response maybe ?
+        #have an gemini api call to get the suggestions
         print("Request:", request.book_name)
         prompt = f"""
 List a few popular books similar to {request.book_name} in JSON format.
@@ -44,13 +43,15 @@ Return: list[SuggestedBooks]
         return response
        
 def serve():
+    # Create a gRPC server
     server = grpc.server(futures.ThreadPoolExecutor())
+    # Add BookSuggestionService
     suggestions_grpc.add_SuggestionsServiceServicer_to_server(BookSuggestionService(), server)
-
+    # Listen on port 50053
     port = "50053"
     server.add_insecure_port(f"[::]:{port}")
     server.start()
-    print(f"Server started. Listening on port {port}.")
+    print(f"Book Suggestion Server started. Listening on port {port}.")
 
     server.wait_for_termination()
 

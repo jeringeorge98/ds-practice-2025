@@ -45,6 +45,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 def verifyTransaction(verification_info):
    try: 
     print("Verification Info:", verification_info)
+    # Create the Trasnaction Verification Request
     verification_request = transaction_verification.TransactionVerificationRequest(
         user=transaction_verification.TransactionUser(
             name=verification_info.get('user', {}).get('name', ''),
@@ -119,6 +120,7 @@ def detectUserFraud(order_info):
         
         print("Final request object:", request)
         
+        # Connect to the Fraud Detection Service
         with grpc.insecure_channel("fraud_detection:50051") as channel:
             stub = fraud_detection_grpc.FraudDetectionServiceStub(channel)
             response = stub.DetectUserFraud(request)
@@ -131,12 +133,14 @@ def detectUserFraud(order_info):
         raise
 
 def suggestBooks(order):
+    # Create the Book Suggestion Request
     request = suggestions.BookRequest(
         book_name=order.get("items", [{}])[0].get("name", "")
     )
+    # Connect to the Book Suggestion Service
     with grpc.insecure_channel("suggestions:50053") as channel:
         stub = suggestions_grpc.SuggestionsServiceStub(channel)
-        
+        # Get the Suggestions
         response = stub.SuggestBooks(request)
         print("Suggestions Response:", response)
     return {"suggestedBooks": [{"title": response.suggestions}]}
@@ -176,7 +180,7 @@ def checkout():
         # Get request object data to json
         request_data = request.get_json() if request.is_json else json.loads(request.data)
         print("Received request data:", request_data)
-        
+        # multi threading the transaction verification, fraud detection and suggestion
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             transaction_future = executor.submit(verifyTransaction, request_data)
             transaction_verification_response = transaction_future.result()

@@ -132,7 +132,7 @@ def isCreditCardValid(expiration_date_str):
     
 
 class FraudDetectionService(fraud_detection_grpc.FraudDetectionServiceServicer):
-    # Create an RPC function to say hello
+    # Create an RPC function to detect fraud
     def DetectUserFraud(self, request, context):
         
         print("Request:",request)
